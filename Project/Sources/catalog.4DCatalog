@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE base SYSTEM "http://www.4d.com/dtd/2007/base.dtd" >
+<base name="upd_component" uuid="8002E8F988884483B83ACBC1F6033E3F" collation_locale="fr">
+	<schema name="DEFAULT_SCHEMA"/>
+	<base_extra package_name="updater" structure_file_name="updater" data_file_path=":updater.4DD">
+		<journal_file journal_file_enabled="true"/>
+	</base_extra>
+</base>
