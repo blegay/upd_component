@@ -53,7 +53,7 @@ Else   // exemple de code qui pourrait être utilisé (à tester)
 	
 	// let say that this is the archive of the file we want to install...
 	var $zipFile : 4D:C1709.File
-	$zipFile:=$updateTempDir.file("newApp_v1_10_49.zip"; fk platform path:K87:2)
+	$zipFile:=$updateTempDir.file("newApp_v1_10_49.zip")
 	
 	// download new version into that file
 	// check the archive (md5, sha256 whatever)
