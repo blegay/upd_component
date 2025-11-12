@@ -6,12 +6,12 @@
 //@scope : public
 //@deprecated : no
 //@description : This method will prepare the update process. Typically called on application startup.
-//@parameter[1-IN-updatePath-TEXT] : path of the update application/structure (e.g. "Macintosh HD:Users:ble:Documents:myApp:temp:myApp.4dbase:") or 4D.File or 4D.Folder
-//@parameter[2-IN-newPath-TEXT] : path of the new stucture (optional, default value : current location "Macintosh HD:Users:ble:Documents:myApp:app:myApp.4dbase:") or 4D.File or 4D.Folder
+//@parameter[1-IN-updatePath-VARIANT] : path of the update application/structure (e.g. "Macintosh HD:Users:ble:Documents:myApp:temp:myApp.4dbase:") or 4D.File or 4D.Folder
+//@parameter[2-IN-newPath-VARIANT] : path of the new stucture (optional, default value : current location "Macintosh HD:Users:ble:Documents:myApp:app:myApp.4dbase:") or 4D.File or 4D.Folder
 //@notes : 
 //  The user will need write access to the current structure dir
 //  The function does nothing on 4D Remote
-//@example : UPD_onStartup 
+//@example : UPD_onStartup
 //
 // download new version from somewhere (S3, ftp/sftp, http, github) into a temp dir
 // for instance, call a web service to get an object
