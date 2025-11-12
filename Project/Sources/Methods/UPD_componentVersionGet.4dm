@@ -1,19 +1,19 @@
 //%attributes = {"shared":true,"invisible":false}
-
-
 //================================================================================
 //@xdoc-start : en
 //@name : UPD_componentVersionGet
 //@scope : public
 //@deprecated : no
 //@description : This function returns the current version of the UPD_Component
-//@parameter[0-OUT-componentVersion-TEXT] : component version (i.e. "4.00.00")
+//@parameter[0-OUT-componentVersion-TEXT] : component version (i.e. "4.00.01")
 //@notes :
 //@example : UPD_componentVersionGet 
 //@see : 
-//@version : 4.00.00
+//@version : 4.00.01
 //@author : Bruno LEGAY (BLE) - Copyrights A&C Consulting - 2024
 //@history : 
+//  MODIFICATION : Bruno LEGAY (BLE) - 12/11/2025, 21:27:13 - 4.00.01
+//   - UPD_onQuit : compress/archive old application
 // MODIFICATION : Bruno LEGAY (BLE) - 10/04/2024, 10:14:31 - v4.00.00
 //   - 4D v20, project mode
 // MODIFICATION : Bruno LEGAY (BLE) - 07/09/2015, 12:01:00 - v1.02.01
@@ -36,19 +36,25 @@
 
 #DECLARE()->$version : Text
 
-//<Modif> Bruno LEGAY (BLE) (10/04/2024)
-//  TODO
-//  DONE
-//   - commandes de chemins de fichiers à remplacer par des commandes File/Folder
-//   - LEP à remplacer par des system worker (code 4D v20+) lorsque possible
-//   - supprimer les variables interprocess et remplacer par du storage
-//   - supprimer le code retrocompatible (le code ne marchera pas avant les version 4D v20).
-//   - 4D v20, project mode
-//   - zip/unzip : remplacer les commandes php par des commandes natives 
-$version:="4.00.00"
+//<Modif> Bruno LEGAY (BLE) (12/11/2025)
+//   - UPD_onQuit : compress/archive old application
+$version:="4.00.01"
 //<Modif>
 
 If (False:C215)
+	
+	//<Modif> Bruno LEGAY (BLE) (10/04/2024)
+	//  TODO
+	//  DONE
+	//   - commandes de chemins de fichiers à remplacer par des commandes File/Folder
+	//   - LEP à remplacer par des system worker (code 4D v20+) lorsque possible
+	//   - supprimer les variables interprocess et remplacer par du storage
+	//   - supprimer le code retrocompatible (le code ne marchera pas avant les version 4D v20).
+	//   - 4D v20, project mode
+	//   - zip/unzip : remplacer les commandes php par des commandes natives 
+	//$version:="4.00.00"
+	//<Modif>
+	
 	//<Modif> Bruno LEGAY (BLE) (07/09/2015)
 	//   - added optional parameter "timeout" to UPD_onQuit
 	// $vt_version:="1.2.1"
