@@ -84,7 +84,7 @@ If (Application type:C494#4D Remote mode:K5:5)  //don't do this on 4D Client
 					" \""+Storage:C1525.upd.currentVersionDirOrFile.platformPath+"\""+\
 					" \""+Storage:C1525.upd.updateVersionDirOrFile.platformPath+"\""+\
 					" "+Storage:C1525.upd.postUpdateAction+\
-					" "+($compressArchive ? "true" : "false")
+					" "+Choose:C955($compressArchive ;"true;"false")
 				
 				UPD__moduleDebugDateTimeLine(4; Current method name:C684; "script : \""+$scriptFile.platformPath+"\", params : \""+$params+"\"...")
 				
@@ -146,7 +146,7 @@ If (Application type:C494#4D Remote mode:K5:5)  //don't do this on 4D Client
 					"'"+$updateScriptFile.path+"'"+\
 					" '"+Storage:C1525.upd.currentVersionDirOrFile.path+"'"+\
 					" '"+Storage:C1525.upd.updateVersionDirOrFile.path+"'"+\
-					" "+($compressArchive ? "true" : "false")+"\n"
+					" "+Choose:C955($compressArchive;"true";"false")+"\n"
 				
 				UPD__moduleDebugDateTimeLine(4; Current method name:C684; "relaunch : "+Choose:C955($relaunch; "true"; "false")+", Storage.upd.postUpdateAction : \""+Storage:C1525.upd.postUpdateAction+"\"")
 				
