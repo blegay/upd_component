@@ -13,9 +13,12 @@
 #    - new : new version         ("C:\Users\Bruno\Docments\company\prod\application\temp\app.4dbase")
 #    - appExec : path to the exe file (e.g. "C:\Program Files (x86)\4D\4D v12.6\4D\4D.exe")
 #    - linkFile : path to the link file (*.4dlink file located in system temporary directory for instance e.g "C:\Users\Bruno\AppData\Local\Temp\restart.4DLink")
+#    - compressEnabled : enable/disable compression of archive (default = "true") [optional] 
 # 
 # Tested ok on Windows 7 SP1 64bit French
 #
+# Bruno LEGAY - A&C Consulting - 2025-11-12 - v4.00.01
+#     - inserted optional parameter to enable/disable compression of archive (default = "true")
 # Bruno LEGAY - A&C Consulting - 2015-04-23 - v1.01.00
 #     - inserted timeout parameter
 # Bruno LEGAY - A&C Consulting - 2015-04-23 - v1.00.00
@@ -31,6 +34,14 @@ if ($nbParam -gt 5)
 	$appExecPath=$args[4]
 	$linkFilePath=$args[5]
 	
+    # Paramètre optionnel : activer la compression (true par défaut). Si passé et égal à "false" (insensible à la casse), la compression est désactivée.
+    if ($nbParam -gt 6) {
+    	# considérer "false" (ou "0") comme désactivation, tout le reste = true
+    	$compressEnabled = -not ($args[6].ToString().ToLower() -in @("false","0"))
+    } else {
+	    $compressEnabled = $true
+    }
+
 	# $appExecPath="`'$appExecPath`'"
 	# $linkFilePath="`'$linkFilePath`'"
 	
@@ -40,7 +51,7 @@ if ($nbParam -gt 5)
 	# $current : Chemin du dossier l'application qu'on va remplacer
 	# e.g. "C:\Users\Bruno\Documents\Yodaforex\updater.4dbase"
 	
-	# sera copi� dans 
+	# sera copi� dans 
 	# e.g. "C:\Users\Bruno\Documents\Yodaforex\archive\updater.4dbase-yyyyMMdd.zip"
 	
 	# ===============================================================================
@@ -133,6 +144,9 @@ if ($nbParam -gt 5)
 	$logString = "powershell version {0}, script root $myPSScriptRoot" -f $PSVersionTable.PSVersion
 	log $logPath $logString
 	
+    # log de l'option compression
+    log $logPath ("compression enabled : {0}" -f $compressEnabled)
+
 	# use a mutex to avoid two scripts doing the same operation on the same process
 	$mtx = New-Object System.Threading.Mutex($false, "update4dAppPid-$targetpid")
 	If ($mtx.WaitOne) { 
@@ -184,45 +198,45 @@ if ($nbParam -gt 5)
 				log $logPath "process $targetpid finished"
 				echo "process finished"
 			}
+		
+			if ($compressEnabled) {
+				# creating an archive of the current version
+				$archiveParentDir = Split-Path $current -Parent
+				
+				$archiveName = "{0}_{1}.zip" -f (Split-Path $current -Leaf), (Get-Date).ToString("yyyyMMdd-HHmmss")
+				# "updater.4dbase_20150423-105806.zip"
 			
-		
-		
-			# creating an archive of the current version
-			$archiveParentDir = Split-Path $current -Parent
-			$archiveName = "{0}_{1}.zip" -f (Split-Path $current -Leaf), (Get-Date).ToString("yyyyMMdd-HHmmss")
-			# "updater.4dbase_20150423-105806.zip"
-		
-			# log $logPath "archive parent dir : $archiveParentDir, archive name : $archiveName"
-		
-			$archiveDir = "$archiveParentDir\archives"
-			# log $logPath "archive dir : $archiveDir"
-			if (!(Test-Path $archiveDir)){
-				New-Item -Path $archiveParentDir -Name "archives" -ItemType directory | Out-Null
-				log $logPath "creating archive dir : $archiveDir"
-			}
-			if (Test-Path $archiveDir){
-				log $logPath "archive dir : $archiveDir exists"
-			}
-		
-		
-			# zip the old "app.4dbase" into the archive
-			$zipArchivePath="$archiveDir\$archiveName"
-			log $logPath "archiving old application..."
-			log $logPath "zipping `"$current`" into `"$zipArchivePath`"..."
+				# log $logPath "archive parent dir : $archiveParentDir, archive name : $archiveName"
+			
+				$archiveDir = "$archiveParentDir\archives"
+				# log $logPath "archive dir : $archiveDir"
+				if (!(Test-Path $archiveDir)){
+					New-Item -Path $archiveParentDir -Name "archives" -ItemType directory | Out-Null
+					log $logPath "creating archive dir : $archiveDir"
+				}
+				if (Test-Path $archiveDir){
+					log $logPath "archive dir : $archiveDir exists"
+				}
+			
+				# zip the old "app.4dbase" into the archive
+				$zipArchivePath="$archiveDir\$archiveName"
+				log $logPath "archiving old application..."
+				log $logPath "zipping `"$current`" into `"$zipArchivePath`"..."
 
-			# & $szPath a -tzip $zipArchivePath $current;
-			sz a -tzip $zipArchivePath $current
+				# & $szPath a -tzip $zipArchivePath $current;
+				sz a -tzip $zipArchivePath $current
+				
+				# zipDirectory $zipArchivePath $current
+				log $logPath "zipping `"$current`" into `"$zipArchivePath`" done."
+				log $logPath "old application archived"
+				echo "old application archived"
 			
-			# zipDirectory $zipArchivePath $current
-			log $logPath "zipping `"$current`" into `"$zipArchivePath`" done."
-			log $logPath "old application archived"
-			echo "old application archived"
-		
-			<# 
-			# Write-Zip not supported in PowerShell v2
-			# Get-Childitem $current -Recurse | Write-Zip -IncludeEmptyDirectories -OutputPath "zipArchivePath"
-			 #>
-			 
+				<# 
+				# Write-Zip not supported in PowerShell v2
+				# Get-Childitem $current -Recurse | Write-Zip -IncludeEmptyDirectories -OutputPath "zipArchivePath"
+				#>
+			}
+			
 			log $logPath "installing new application..."
 		
 			$destParentDir = Split-Path $current -Parent

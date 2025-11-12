@@ -6,9 +6,14 @@
 # ==================================================================================================
 # History 
 # ----------
+# v 4.0.1
+# added optional parameter to enable/disable compression of archive (default = "true")
+# Bruno LEGAY - 12.11.2025
+# ----------
 # v 1.0.2
 # improved logs
 # Bruno LEGAY - 07.09.2015
+# ----------
 # v 1.0.2
 # improved logs
 # added quote to handle space in path (and tests)
@@ -33,6 +38,7 @@
 # Grab the parameter off the command line delay=1
 currentPath="$1"
 updatePath="$2"
+compressOpt="$3"  # optional: true/false (default true)
 
 usage=0;
 
@@ -51,7 +57,23 @@ if [ "${usage}" == "1" ]; then
 	echo " where"
 	echo " CURRENTPATH = current path"
 	echo " UPDATEPATH = update path"
+	echo " COMPRESS = optional true/false (default true). false|0|no|n disable compression."
 	exit
+fi
+
+# determine compressEnabled (1 = enabled, 0 = disabled)
+if [ -z "${compressOpt}" ]; then
+    compressEnabled=1
+else
+    lc=$(echo "${compressOpt}" | tr '[:upper:]' '[:lower:]')
+    case "${lc}" in
+        "false"|"0"|"no"|"n")
+            compressEnabled=0
+            ;;
+        *)
+            compressEnabled=1
+            ;;
+    esac
 fi
 
 #===================================================================
@@ -106,40 +128,45 @@ LOGFILE="${currentPath}/../logs/update_log_`s_nowDate`.txt"
 			echo "`s_nowLog` - sh - currentDir ${currentDir}"
 			echo "`s_nowLog` - sh - file : ${currentFile}"
 			
-			archivePath="${currentPath}/../archives/${currentFile}_`s_now`"
-			echo "`s_nowLog` - sh - archive : ${archivePath}.tgz"
+            if [ "${compressEnabled}" -eq 1 ]; then
+				archivePath="${currentPath}/../archives/${currentFile}_`s_now`"
+				echo "`s_nowLog` - sh - archive : ${archivePath}.tgz"
 			
-			# l'application sera archivée dans une archive tgz
-			echo "`s_nowLog` - sh - tar -zcf \"${archivePath}.tgz\" \"${currentPath}\"..."
-			tar -zcf "${archivePath}.tgz" "${currentPath}"
-			echo "`s_nowLog` - sh - tar done ($?)."
-			
-			# l'application sera archivée dans une archive zip
-			# echo "`s_nowLog` - sh - ditto -ck --keepParent \"${currentPath}\" \"${archivePath}.zip\""
-			# ditto -ck --keepParent "${currentPath}" "${archivePath}.zip"
-			# echo "`s_nowLog` - sh - ditto done ($?)."
-			
-			#	if [ -e "${currentPath}/../archives" ]; then
-			#		echo "`s_nowLog` - sh - file : ${currentPath}/../archives exists"
-			#		echo "`s_nowLog` - sh - tar -zcvf ${currentPath}/../archives/${currentFile}_`s_now`.tgz ${currentPath}..."
-			#		# l'application sera archivée dans une archive tgz
-			#		# tar -zcvf "${currentPath}/../archives/${currentFile}_`s_now`.tgz" "${currentPath}"
-			#		
-			#		# l'application sera archivée dans une archive zip
-			#		echo "`s_nowLog` - sh - ditto -ck --keepParent ${currentPath} ${currentPath}/../archives/${currentFile}_`s_now`.zip""
-			#		ditto -ck --keepParent "${currentPath}" "${currentPath}/../archives/${currentFile}_`s_now`.zip"
-			#	else
-			#		# l'application sera archivée dans une archive tgz
-			#		# echo "`s_nowLog` - sh - tar -zcvf ${currentPath}_`s_now`.tgz ${currentPath}..."
-			#		# tar -zcvf "${currentPath}_`s_now`.tgz" "${currentPath}"
-			#		
-			#		# l'application sera archivée dans une archive zip
-			#		echo "`s_nowLog` - sh - ditto -ck --keepParent ${currentPath} ${currentPath}_`s_now`.zip""
-			#		ditto -ck --keepParent "${currentPath}" "${currentPath}_`s_now`.zip"
-			#	fi
+				# l'application sera archiv√©e dans une archive tgz
+				echo "`s_nowLog` - sh - tar -zcf \"${archivePath}.tgz\" \"${currentPath}\"..."
+				tar -zcf "${archivePath}.tgz" "${currentPath}"
+				ERRNO=$?
+					echo "`s_nowLog` - sh - tar done ($?)."
+
+				# l'application sera archiv√©e dans une archive zip
+				# echo "`s_nowLog` - sh - ditto -ck --keepParent \"${currentPath}\" \"${archivePath}.zip\""
+				# ditto -ck --keepParent "${currentPath}" "${archivePath}.zip"
+				# echo "`s_nowLog` - sh - ditto done ($?)."
+				
+				#	if [ -e "${currentPath}/../archives" ]; then
+				#		echo "`s_nowLog` - sh - file : ${currentPath}/../archives exists"
+				#		echo "`s_nowLog` - sh - tar -zcvf ${currentPath}/../archives/${currentFile}_`s_now`.tgz ${currentPath}..."
+				#		# l'application sera archiv√©e dans une archive tgz
+				#		# tar -zcvf "${currentPath}/../archives/${currentFile}_`s_now`.tgz" "${currentPath}"
+				#		
+				#		# l'application sera archiv√©e dans une archive zip
+				#		echo "`s_nowLog` - sh - ditto -ck --keepParent ${currentPath} ${currentPath}/../archives/${currentFile}_`s_now`.zip""
+				#		ditto -ck --keepParent "${currentPath}" "${currentPath}/../archives/${currentFile}_`s_now`.zip"
+				#	else
+				#		# l'application sera archiv√©e dans une archive tgz
+				#		# echo "`s_nowLog` - sh - tar -zcvf ${currentPath}_`s_now`.tgz ${currentPath}..."
+				#		# tar -zcvf "${currentPath}_`s_now`.tgz" "${currentPath}"
+				#		
+				#		# l'application sera archiv√©e dans une archive zip
+				#		echo "`s_nowLog` - sh - ditto -ck --keepParent ${currentPath} ${currentPath}_`s_now`.zip""
+				#		ditto -ck --keepParent "${currentPath}" "${currentPath}_`s_now`.zip"
+				#	fi
+			else
+				ERRNO=0
+				echo "`s_nowLog` - sh - Compression disabled, no archive will be created."
+			fi
 
 			# read the error from tar/ditto
-			ERRNO=$?
 			if [ ${ERRNO} -eq 0 ]; then
 			
 			    if [ -e "${currentPath}" ]; then 
