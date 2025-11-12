@@ -8,6 +8,7 @@
 //@description : This method will trigger the update of the application
 //@parameter[1-IN-relaunch-BOOLEAN] :  relaunch the current structure (optional, default TRUE)
 //@parameter[2-IN-timeout-LONGINT] :  timeout in seconds (optional, default 0 i.e. no timeout)
+//@parameter[3-IN-archive-BOOLEAN] :  compress/archive old application (optional, default true)
 //@notes :
 //@example : 
 // 
@@ -20,27 +21,37 @@
 //@xdoc-end
 //================================================================================
 
-#DECLARE($relaunchParam : Boolean; $timeoutSecondsParam : Integer)
+#DECLARE($relaunchParam : Boolean; $timeoutSecondsParam : Integer; $compressArchiveParam : Boolean)
 
 var $nbParam : Integer
 $nbParam:=Count parameters:C259
 
 var $relaunch : Boolean
 var $timeoutSeconds : Integer
+var $compressArchive : Boolean
 
 Case of 
 	: ($nbParam=0)
 		$relaunch:=True:C214
 		$timeoutSeconds:=0
+		$compressArchive:=True:C214
 		
 	: ($nbParam=1)
 		$relaunch:=$relaunchParam
 		$timeoutSeconds:=0
+		$compressArchive:=True:C214
 		
-	Else 
-		//: ($vl_nbParam=2)
+	: ($nbParam=2)
 		$relaunch:=$relaunchParam
 		$timeoutSeconds:=$timeoutSecondsParam
+		$compressArchive:=True:C214
+		
+	Else 
+		//: ($vl_nbParam=3)
+		$relaunch:=$relaunchParam
+		$timeoutSeconds:=$timeoutSecondsParam
+		$timeoutSeconds:=$timeoutSecondsParam
+		$compressArchive:=$compressArchiveParam
 		
 End case 
 
@@ -72,7 +83,8 @@ If (Application type:C494#4D Remote mode:K5:5)  //don't do this on 4D Client
 				$params:=String:C10(Storage:C1525.upd.pid)+" "+String:C10($timeoutSeconds)+\
 					" \""+Storage:C1525.upd.currentVersionDirOrFile.platformPath+"\""+\
 					" \""+Storage:C1525.upd.updateVersionDirOrFile.platformPath+"\""+\
-					" "+Storage:C1525.upd.postUpdateAction
+					" "+Storage:C1525.upd.postUpdateAction+\
+					" "+($compressArchive ? "true" : "false")
 				
 				UPD__moduleDebugDateTimeLine(4; Current method name:C684; "script : \""+$scriptFile.platformPath+"\", params : \""+$params+"\"...")
 				
@@ -133,7 +145,8 @@ If (Application type:C494#4D Remote mode:K5:5)  //don't do this on 4D Client
 				$cmd:=\
 					"'"+$updateScriptFile.path+"'"+\
 					" '"+Storage:C1525.upd.currentVersionDirOrFile.path+"'"+\
-					" '"+Storage:C1525.upd.updateVersionDirOrFile.path+"'\n"
+					" '"+Storage:C1525.upd.updateVersionDirOrFile.path+"'"+\
+					" "+($compressArchive ? "true" : "false")+"\n"
 				
 				UPD__moduleDebugDateTimeLine(4; Current method name:C684; "relaunch : "+Choose:C955($relaunch; "true"; "false")+", Storage.upd.postUpdateAction : \""+Storage:C1525.upd.postUpdateAction+"\"")
 				
