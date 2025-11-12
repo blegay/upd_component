@@ -18,7 +18,7 @@ C_VARIANT:C1683(UPD_onStartup; $2)
 
 C_BOOLEAN:C305(UPD_onQuit; $1)
 C_LONGINT:C283(UPD_onQuit; $2)
-C_LONGINT:C283(UPD_onQuit; $3)
+C_BOOLEAN:C305(UPD_onQuit; $3)
 
 C_TEXT:C284(UPD__restartPrepare; $0)
 C_TEXT:C284(UPD__restartPrepare; $1)
